@@ -36,6 +36,34 @@ internal static class HabitMappings
         };
     }
 
+    public static void UpdateFromDto(this Habit habit, UpdateHabitDto updateHabitDto)
+    {
+        habit.Name = updateHabitDto.Name;
+        habit.Description = updateHabitDto.Description;
+        habit.Type = updateHabitDto.Type;
+        habit.EndDate = updateHabitDto.EndDate;
+
+        habit.Frequency = new Frequency
+        {
+            Type = updateHabitDto.Frequency.Type,
+            TimesPerPeriod = updateHabitDto.Frequency.TimesPerPeriod
+        };
+
+        habit.Target = new Target
+        {
+            Value = updateHabitDto.Target.Value,
+            Unit = updateHabitDto.Target.Unit
+        };
+
+        if (updateHabitDto.Milestone != null)
+        {
+            habit.Milestone ??= new Milestone();
+            habit.Milestone.Target = updateHabitDto.Milestone.Target;
+        }
+
+        habit.UpdatedAtUtc = DateTime.UtcNow;
+    }
+
     public static Habit ToEntity(this CreateHabitDto dto)
     {
         Habit habit = new()
