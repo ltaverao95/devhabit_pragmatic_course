@@ -45,3 +45,4 @@ services:
       DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS: true
     ports:
       - 18888:18888
+      - 18889:18889

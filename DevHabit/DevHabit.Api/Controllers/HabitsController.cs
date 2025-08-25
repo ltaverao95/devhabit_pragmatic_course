@@ -1,5 +1,4 @@
-﻿using System.Linq.Expressions;
-using DevHabit.Api.Database;
+﻿using DevHabit.Api.Database;
 using DevHabit.Api.DTOs.Habits;
 using DevHabit.Api.Entities;
 using Microsoft.AspNetCore.JsonPatch;
@@ -67,7 +66,7 @@ public sealed class HabitsController(ApplicationDbContext dbContext) : Controlle
     public async Task<ActionResult> UpdateHabit(string id, [FromBody] UpdateHabitDto updateHabitDto)
     {
         Habit? habit = await dbContext.Habits.FirstOrDefaultAsync(x => x.Id == id);
-        if(habit == null)
+        if (habit == null)
         {
             return NotFound();
         }
@@ -104,6 +103,21 @@ public sealed class HabitsController(ApplicationDbContext dbContext) : Controlle
         habit.Description = habitDto.Description;
         habit.UpdatedAtUtc = DateTime.UtcNow;
 
+        await dbContext.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteHabit(string id)
+    {
+        Habit? habit = await dbContext.Habits.FirstOrDefaultAsync(x => x.Id == id);
+        if (habit == null)
+        {
+            return NotFound();
+        }
+
+        dbContext.Habits.Remove(habit);
         await dbContext.SaveChangesAsync();
 
         return NoContent();
