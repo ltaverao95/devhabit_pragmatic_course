@@ -3,8 +3,11 @@ using DevHabit.Api.Database;
 using DevHabit.Api.DTOs.Tags;
 using DevHabit.Api.Entities;
 using DevTag.Api.DTOs.Tags;
+using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 namespace DevHabit.Api.Controllers;
@@ -47,13 +50,26 @@ public sealed class TagsController(ApplicationDbContext dbContext) : ControllerB
     }
 
     [HttpPost]
-    public async Task<ActionResult<TagDto>> CreateTag(CreateTagDto createTagDto)
+    public async Task<ActionResult<TagDto>> CreateTag(CreateTagDto createTagDto, 
+        IValidator<CreateTagDto> validator,
+        ProblemDetailsFactory problemDetailsFactory)
     {
+        ValidationResult validationResult = await validator.ValidateAsync(createTagDto);
+        if(!validationResult.IsValid)
+        {
+            ProblemDetails problem = problemDetailsFactory.CreateProblemDetails(HttpContext, StatusCodes.Status400BadRequest);
+            problem.Extensions.Add("errors", validationResult.ToDictionary());
+            return BadRequest(problem);
+        }
+
         Tag tag = createTagDto.ToEntity();
         bool tagExists = await dbContext.Tags.AnyAsync(x => x.Name == tag.Name);
         if (tagExists)
         {
-            return Conflict($"A tag with the name '{tag.Name}' already exists.");
+            return Problem(
+                detail: $"A tag with the name '{tag.Name}' already exists.",
+                statusCode: StatusCodes.Status409Conflict
+                );
         }
 
         dbContext.Tags.Add(tag);
