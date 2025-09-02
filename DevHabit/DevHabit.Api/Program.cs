@@ -1,5 +1,6 @@
 using DevHabit.Api.Database;
 using DevHabit.Api.Extensions;
+using DevHabit.Api.Middleware;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -56,6 +57,9 @@ builder.Services.AddProblemDetails(options =>
     };
 });
 
+builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
 WebApplication app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -65,6 +69,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseExceptionHandler();
 
 app.MapControllers();
 
