@@ -1,10 +1,5 @@
 ﻿namespace DevHabit.Api.DTOs.Tags;
 
-public sealed record TagsCollectionDto
-{
-    public List<TagDto> Data { get; init; } = new();
-}
-
 public sealed class TagDto
 {
     public string Id { get; set; }

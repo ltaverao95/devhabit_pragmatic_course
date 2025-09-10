@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using DevHabit.Api.Database;
+using DevHabit.Api.DTOs.Common;
 using DevHabit.Api.DTOs.Tags;
 using DevHabit.Api.Entities;
 using DevTag.Api.DTOs.Tags;
@@ -17,19 +18,19 @@ namespace DevHabit.Api.Controllers;
 public sealed class TagsController(ApplicationDbContext dbContext) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<TagsCollectionDto>> GetTags()
+    public async Task<ActionResult<PaginationResult<TagDto>>> GetTags()
     {
         List<TagDto> tags = await dbContext
             .Tags
             .Select(TagQueries.ProjectToDto())
             .ToListAsync();
 
-        var tagsCollectionDto = new TagsCollectionDto
+        var paginationResult = new PaginationResult<TagDto>
         {
-            Data = tags
+            Items = tags
         };
 
-        return Ok(tagsCollectionDto);
+        return Ok(paginationResult);
     }
 
     [HttpGet("{id}")]
