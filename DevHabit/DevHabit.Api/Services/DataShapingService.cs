@@ -85,7 +85,7 @@ public sealed class DataShapingService
             typeof(T),
             t => typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance));
 
-        var result = fieldsSet.All(field => propertyInfos.Any(p => p.Name.Equals(field, StringComparison.OrdinalIgnoreCase)));
+        bool result = fieldsSet.All(field => propertyInfos.Any(p => p.Name.Equals(field, StringComparison.OrdinalIgnoreCase)));
 
         return result;
     }
