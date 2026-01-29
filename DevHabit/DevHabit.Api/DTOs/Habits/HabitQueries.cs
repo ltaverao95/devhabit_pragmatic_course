@@ -40,9 +40,9 @@ internal static class HabitQueries
         };
     }
 
-    public static Expression<Func<Habit, HabitTagDto>> ProjectToDtoWithTags()
+    public static Expression<Func<Habit, HabitWithTagsDto>> ProjectToDtoWithTags()
     {
-        return x => new HabitTagDto
+        return x => new HabitWithTagsDto
         {
             Id = x.Id,
             Name = x.Name,
@@ -72,6 +72,41 @@ internal static class HabitQueries
                                 Current = x.Milestone.Current
                             },
             UpdatedAtUtc = x.UpdatedAtUtc
+        };
+    }
+
+    public static Expression<Func<Habit, HabitWithTagsDtoV2>> ProjectToDtoWithTagsV2()
+    {
+        return x => new HabitWithTagsDtoV2
+        {
+            Id = x.Id,
+            Name = x.Name,
+            Description = x.Description,
+            Type = x.Type,
+            CreatedAt = x.CreatedAtUtc,
+            Frequency = new FrequencyDto
+            {
+                Type = x.Frequency.Type,
+                TimesPerPeriod = x.Frequency.TimesPerPeriod
+            },
+            IsArchived = x.IsArchived,
+            Status = x.Status,
+            Target = new TargetDto
+            {
+                Value = x.Target.Value,
+                Unit = x.Target.Unit
+            },
+            Tags = x.Tags.Select(t => t.Name).ToArray(),
+            EndDate = x.EndDate,
+            LastCompletedAt = x.LastCompletedAtUtc,
+            Milestone = x.Milestone == null
+                            ? null
+                            : new MilestoneDto
+                            {
+                                Target = x.Milestone.Target,
+                                Current = x.Milestone.Current
+                            },
+            UpdatedAt = x.UpdatedAtUtc
         };
     }
 }
