@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DevHabit.Api.Migrations.Application
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250825203009_add_tags")]
-    partial class add_tags
+    [Migration("20250204114710_Add_HabitTags")]
+    partial class Add_HabitTags
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,7 +21,7 @@ namespace DevHabit.Api.Migrations.Application
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("dev_habit")
-                .HasAnnotation("ProductVersion", "9.0.7")
+                .HasAnnotation("ProductVersion", "9.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -76,6 +76,29 @@ namespace DevHabit.Api.Migrations.Application
                         .HasName("pk_habits");
 
                     b.ToTable("habits", "dev_habit");
+                });
+
+            modelBuilder.Entity("DevHabit.Api.Entities.HabitTag", b =>
+                {
+                    b.Property<string>("HabitId")
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("habit_id");
+
+                    b.Property<string>("TagId")
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("tag_id");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at_utc");
+
+                    b.HasKey("HabitId", "TagId")
+                        .HasName("pk_habit_tags");
+
+                    b.HasIndex("TagId")
+                        .HasDatabaseName("ix_habit_tags_tag_id");
+
+                    b.ToTable("habit_tags", "dev_habit");
                 });
 
             modelBuilder.Entity("DevHabit.Api.Entities.Tag", b =>
@@ -194,6 +217,28 @@ namespace DevHabit.Api.Migrations.Application
 
                     b.Navigation("Target")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("DevHabit.Api.Entities.HabitTag", b =>
+                {
+                    b.HasOne("DevHabit.Api.Entities.Habit", null)
+                        .WithMany("HabitTags")
+                        .HasForeignKey("HabitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_habit_tags_habits_habit_id");
+
+                    b.HasOne("DevHabit.Api.Entities.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_habit_tags_tags_tag_id");
+                });
+
+            modelBuilder.Entity("DevHabit.Api.Entities.Habit", b =>
+                {
+                    b.Navigation("HabitTags");
                 });
 #pragma warning restore 612, 618
         }

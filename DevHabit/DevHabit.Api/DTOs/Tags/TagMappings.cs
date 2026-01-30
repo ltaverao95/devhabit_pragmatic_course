@@ -1,8 +1,6 @@
-﻿using DevHabit.Api.DTOs.Tags;
-using DevHabit.Api.Entities;
-using DevTag.Api.DTOs.Tags;
+﻿using DevHabit.Api.Entities;
 
-namespace DevTag.Api.DTOs.Tags;
+namespace DevHabit.Api.DTOs.Tags;
 
 internal static class TagMappings
 {
@@ -18,23 +16,23 @@ internal static class TagMappings
         };
     }
 
-    public static void UpdateFromDto(this Tag tag, UpdateTagDto updateTagDto)
-    {
-        tag.Name = updateTagDto.Name;
-        tag.Description = updateTagDto.Description;
-        tag.UpdatedAtUtc = DateTime.UtcNow;
-    }
-
     public static Tag ToEntity(this CreateTagDto dto)
     {
-        Tag tag = new()
+        Tag habit = new()
         {
-            Id = $"h_{Guid.CreateVersion7()}",
+            Id = $"t_{Guid.CreateVersion7()}",
             Name = dto.Name,
             Description = dto.Description,
             CreatedAtUtc = DateTime.UtcNow
         };
 
-        return tag;
+        return habit;
+    }
+
+    public static void UpdateFromDto(this Tag tag, UpdateTagDto dto)
+    {
+        tag.Name = dto.Name;
+        tag.Description = dto.Description;
+        tag.UpdatedAtUtc = DateTime.UtcNow;
     }
 }

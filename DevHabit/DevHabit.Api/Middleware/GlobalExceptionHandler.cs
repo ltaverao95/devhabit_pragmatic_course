@@ -5,22 +5,20 @@ namespace DevHabit.Api.Middleware;
 
 public sealed class GlobalExceptionHandler(IProblemDetailsService problemDetailsService) : IExceptionHandler
 {
-    public async ValueTask<bool> TryHandleAsync(HttpContext httpContext,
-                                                Exception exception,
-                                                CancellationToken cancellationToken)
+    public ValueTask<bool> TryHandleAsync(
+        HttpContext httpContext,
+        Exception exception,
+        CancellationToken cancellationToken)
     {
-        var context = new ProblemDetailsContext
+        return problemDetailsService.TryWriteAsync(new ProblemDetailsContext
         {
             HttpContext = httpContext,
             Exception = exception,
             ProblemDetails = new ProblemDetails
             {
                 Title = "Internal Server Error",
-                Status = StatusCodes.Status500InternalServerError,
-                Detail = "An error ocurred while processing your request."
+                Detail = "An error occurred while processing your request. Please try again"
             }
-        };
-
-        return await problemDetailsService.TryWriteAsync(context);
+        });
     }
 }

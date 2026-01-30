@@ -19,13 +19,13 @@ public sealed class HabitTagsController(ApplicationDbContext dbContext) : Contro
             .Include(h => h.HabitTags)
             .FirstOrDefaultAsync(h => h.Id == habitId);
 
-        if(habit is null)
+        if (habit is null)
         {
-            return NotFound($"Habit with ID {habitId} not found.");
+            return NotFound();
         }
 
-        var currentTagsIds = habit.HabitTags.Select(ht => ht.TagId).ToHashSet();
-        if(currentTagsIds.SetEquals(upsertHabitTagsDto.TagIds))
+        var currentTagIds = habit.HabitTags.Select(ht => ht.TagId).ToHashSet();
+        if (currentTagIds.SetEquals(upsertHabitTagsDto.TagIds))
         {
             return NoContent();
         }
@@ -36,14 +36,14 @@ public sealed class HabitTagsController(ApplicationDbContext dbContext) : Contro
             .Select(t => t.Id)
             .ToListAsync();
 
-        if(existingTagIds.Count != upsertHabitTagsDto.TagIds.Count)
+        if (existingTagIds.Count != upsertHabitTagsDto.TagIds.Count)
         {
-            return BadRequest("One or more tag IDs are invalid");
+            return BadRequest("One or more tag IDs is invalid");
         }
 
         habit.HabitTags.RemoveAll(ht => !upsertHabitTagsDto.TagIds.Contains(ht.TagId));
 
-        string[] tagIdsToAdd = upsertHabitTagsDto.TagIds.Except(currentTagsIds).ToArray();
+        string[] tagIdsToAdd = upsertHabitTagsDto.TagIds.Except(currentTagIds).ToArray();
         habit.HabitTags.AddRange(tagIdsToAdd.Select(tagId => new HabitTag
         {
             HabitId = habitId,
@@ -62,12 +62,13 @@ public sealed class HabitTagsController(ApplicationDbContext dbContext) : Contro
         HabitTag? habitTag = await dbContext.HabitTags
             .SingleOrDefaultAsync(ht => ht.HabitId == habitId && ht.TagId == tagId);
 
-        if(habitTag is null)
+        if (habitTag is null)
         {
             return NotFound();
         }
 
         dbContext.HabitTags.Remove(habitTag);
+
         await dbContext.SaveChangesAsync();
 
         return NoContent();

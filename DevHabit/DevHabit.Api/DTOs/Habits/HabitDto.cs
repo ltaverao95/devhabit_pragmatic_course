@@ -6,7 +6,7 @@ namespace DevHabit.Api.DTOs.Habits;
 public sealed record HabitDto : ILinksResponse
 {
     public required string Id { get; init; }
-    public required string Name { get; init; } = string.Empty;
+    public required string Name { get; init; }
     public string? Description { get; init; }
     public required HabitType Type { get; init; }
     public required FrequencyDto Frequency { get; init; }

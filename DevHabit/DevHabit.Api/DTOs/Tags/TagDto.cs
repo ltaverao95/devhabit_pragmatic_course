@@ -1,10 +1,15 @@
-﻿namespace DevHabit.Api.DTOs.Tags;
+using DevHabit.Api.DTOs.Common;
+using Newtonsoft.Json;
 
-public sealed class TagDto
+namespace DevHabit.Api.DTOs.Tags;
+
+public sealed record TagDto : ILinksResponse
 {
-    public string Id { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string? Description { get; set; }
-    public DateTime CreatedAtUtc { get; set; }
-    public DateTime? UpdatedAtUtc { get; set; }
+    public required string Id { get; init; }
+    public required string Name { get; init; }
+    public string? Description { get; init; }
+    public required DateTime CreatedAtUtc { get; init; }
+    public DateTime? UpdatedAtUtc { get; init; }
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public List<LinkDto> Links { get; set; }
 }

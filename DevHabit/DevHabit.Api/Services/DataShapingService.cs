@@ -14,11 +14,11 @@ public sealed class DataShapingService
         HashSet<string> fieldsSet = fields?
             .Split(',', StringSplitOptions.RemoveEmptyEntries)
             .Select(f => f.Trim())
-            .ToHashSet(StringComparer.OrdinalIgnoreCase) ?? new HashSet<string>();
+            .ToHashSet(StringComparer.OrdinalIgnoreCase) ?? [];
 
         PropertyInfo[] propertyInfos = PropertiesCache.GetOrAdd(
             typeof(T),
-            t => typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance));
+            t => t.GetProperties(BindingFlags.Public | BindingFlags.Instance));
 
         if (fieldsSet.Any())
         {
@@ -37,18 +37,19 @@ public sealed class DataShapingService
         return (ExpandoObject)shapedObject;
     }
 
-    public List<ExpandoObject> ShapeCollectionData<T>(IEnumerable<T> entities,
-                                                      string? fields,
-                                                      Func<T, List<LinkDto>>? linksFactory = null)
+    public List<ExpandoObject> ShapeCollectionData<T>(
+        IEnumerable<T> entities,
+        string? fields,
+        Func<T, List<LinkDto>>? linksFactory = null)
     {
         HashSet<string> fieldsSet = fields?
             .Split(',', StringSplitOptions.RemoveEmptyEntries)
             .Select(f => f.Trim())
-            .ToHashSet(StringComparer.OrdinalIgnoreCase) ?? new HashSet<string>();
+            .ToHashSet(StringComparer.OrdinalIgnoreCase) ?? [];
 
         PropertyInfo[] propertyInfos = PropertiesCache.GetOrAdd(
             typeof(T),
-            t => typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance));
+            t => t.GetProperties(BindingFlags.Public | BindingFlags.Instance));
 
         if (fieldsSet.Any())
         {
@@ -57,7 +58,7 @@ public sealed class DataShapingService
                 .ToArray();
         }
 
-        List<ExpandoObject> shapedObjects = new();
+        List<ExpandoObject> shapedObjects = [];
         foreach (T entity in entities)
         {
             IDictionary<string, object?> shapedObject = new ExpandoObject();
@@ -67,14 +68,14 @@ public sealed class DataShapingService
                 shapedObject[propertyInfo.Name] = propertyInfo.GetValue(entity);
             }
 
-            if(linksFactory is not null)
+            if (linksFactory is not null)
             {
-                List<LinkDto> links = linksFactory(entity);
-                shapedObject["links"] = links;
+                shapedObject["links"] = linksFactory(entity);
             }
 
             shapedObjects.Add((ExpandoObject)shapedObject);
         }
+
         return shapedObjects;
     }
 
@@ -85,17 +86,15 @@ public sealed class DataShapingService
             return true;
         }
 
-        var fieldsSet = fields?
+        var fieldsSet = fields
             .Split(',', StringSplitOptions.RemoveEmptyEntries)
             .Select(f => f.Trim())
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         PropertyInfo[] propertyInfos = PropertiesCache.GetOrAdd(
             typeof(T),
-            t => typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance));
+            t => t.GetProperties(BindingFlags.Public | BindingFlags.Instance));
 
-        bool result = fieldsSet.All(field => propertyInfos.Any(p => p.Name.Equals(field, StringComparison.OrdinalIgnoreCase)));
-
-        return result;
+        return fieldsSet.All(f => propertyInfos.Any(p => p.Name.Equals(f, StringComparison.OrdinalIgnoreCase)));
     }
 }

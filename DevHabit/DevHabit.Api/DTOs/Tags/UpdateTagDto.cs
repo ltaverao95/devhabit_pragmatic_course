@@ -1,9 +1,7 @@
-﻿using DevHabit.Api.Entities;
-
-namespace DevHabit.Api.DTOs.Tags;
+﻿namespace DevHabit.Api.DTOs.Tags;
 
 public sealed record UpdateTagDto
 {
-    public string Name { get; set; } = string.Empty;
+    public required string Name { get; set; }
     public string? Description { get; set; }
 }

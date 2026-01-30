@@ -4,10 +4,11 @@ namespace DevHabit.Api.Services.Sorting;
 
 internal static class QueryableExtensions
 {
-    public static IQueryable<T> ApplySort<T>(this IQueryable<T> query,
-                                             string? sort,
-                                             SortMapping[] mappings,
-                                             string defaultOrderBy = "Id")
+    public static IQueryable<T> ApplySort<T>(
+        this IQueryable<T> query,
+        string? sort,
+        SortMapping[] mappings,
+        string defaultOrderBy = "Id")
     {
         if (string.IsNullOrWhiteSpace(sort))
         {
@@ -22,12 +23,12 @@ internal static class QueryableExtensions
         var orderByParts = new List<string>();
         foreach (string field in sortFields)
         {
-            (string sortField, bool isDecending) = ParseSortField(field);
+            (string sortField, bool isDescending) = ParseSortField(field);
 
             SortMapping mapping = mappings.First(m =>
                 m.SortField.Equals(sortField, StringComparison.OrdinalIgnoreCase));
 
-            string direction = (isDecending, mapping.Reverse) switch
+            string direction = (isDescending, mapping.Reverse) switch
             {
                 (false, false) => "ASC",
                 (false, true) => "DESC",
@@ -38,18 +39,18 @@ internal static class QueryableExtensions
             orderByParts.Add($"{mapping.PropertyName} {direction}");
         }
 
-        string orderBy = string.Join(", ", orderByParts);
+        string orderBy = string.Join(",", orderByParts);
 
         return query.OrderBy(orderBy);
     }
 
-    private static (string SortField, bool IsDecending) ParseSortField(string field)
+    private static (string SortField, bool IsDescending) ParseSortField(string field)
     {
         string[] parts = field.Split(' ');
         string sortField = parts[0];
-        bool isDecending = parts.Length > 1 &&
-                           parts[1].Equals("desc", StringComparison.OrdinalIgnoreCase);
+        bool isDescending = parts.Length > 1 &&
+                            parts[1].Equals("desc", StringComparison.OrdinalIgnoreCase);
 
-        return (sortField, isDecending);
+        return (sortField, isDescending);
     }
 }
