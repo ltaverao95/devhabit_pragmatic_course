@@ -58,7 +58,7 @@ public sealed class AuthController(UserManager<IdentityUser> userManager,
 
         await transaction.CommitAsync();
 
-        TokenRequest tokenRequest = new TokenRequest(identityUser.Id, identityUser.Email);
+        var tokenRequest = new TokenRequest(identityUser.Id, identityUser.Email);
         AccessTokensDto accessTokens = tokenProvider.Create(tokenRequest);
 
         return Ok(accessTokens);
@@ -83,7 +83,7 @@ public sealed class AuthController(UserManager<IdentityUser> userManager,
                 statusCode: StatusCodes.Status401Unauthorized);
         }
 
-        TokenRequest tokenRequest = new TokenRequest(identityUser.Id, identityUser.Email!);
+        var tokenRequest = new TokenRequest(identityUser.Id, identityUser.Email!);
         AccessTokensDto accessTokens = tokenProvider.Create(tokenRequest);
 
         return Ok(accessTokens);
