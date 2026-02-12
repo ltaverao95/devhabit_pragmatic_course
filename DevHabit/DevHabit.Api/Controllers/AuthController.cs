@@ -58,7 +58,7 @@ public sealed class AuthController(UserManager<IdentityUser> userManager,
 
         await transaction.CommitAsync();
 
-        var tokenRequest = new TokenRequest(identityUser.Id, identityUser.Email);
+        TokenRequest tokenRequest = new TokenRequest(identityUser.Id, identityUser.Email);
         AccessTokensDto accessTokens = tokenProvider.Create(tokenRequest);
 
         return Ok(accessTokens);
@@ -75,7 +75,7 @@ public sealed class AuthController(UserManager<IdentityUser> userManager,
                 statusCode: StatusCodes.Status401Unauthorized);
         }
 
-        var isPasswordValid = await userManager.CheckPasswordAsync(identityUser, loginUserDto.Password);
+        bool isPasswordValid = await userManager.CheckPasswordAsync(identityUser, loginUserDto.Password);
         if (!isPasswordValid)
         {
             return Problem(
@@ -83,7 +83,7 @@ public sealed class AuthController(UserManager<IdentityUser> userManager,
                 statusCode: StatusCodes.Status401Unauthorized);
         }
 
-        var tokenRequest = new TokenRequest(identityUser.Id, identityUser.Email!);
+        TokenRequest tokenRequest = new TokenRequest(identityUser.Id, identityUser.Email!);
         AccessTokensDto accessTokens = tokenProvider.Create(tokenRequest);
 
         return Ok(accessTokens);
